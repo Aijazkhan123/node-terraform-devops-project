@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Code
         uses: actions/checkout@v3
 
@@ -42,14 +41,14 @@ jobs:
         working-directory: terraform
 
       - name: Wait for EC2 to be ready
-        run: sleep 60  # wait 1 minute for EC2 to start
+        run: sleep 60  # wait 1 minute for EC2 and Docker
 
       - name: Check Node.js App
         run: |
           # Get public IP of the EC2 instance
           EC2_IP=$(terraform output -raw ec2_public_ip)
           echo "EC2 Public IP: $EC2_IP"
-          
+
           # Test the Node.js endpoint
           RESPONSE=$(curl -s http://$EC2_IP:3000)
           echo "Response from app: $RESPONSE"
@@ -59,7 +58,7 @@ jobs:
             echo "App check failed!"
             exit 1
           fi
-        working-directory: terraform
+       
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
