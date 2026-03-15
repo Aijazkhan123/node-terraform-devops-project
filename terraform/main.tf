@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "devops_sg" {
-  name = "node-terraform-sg-final"  # Changed to a unique name
+  name = "node-terraform-sg-final v1"
 
   ingress {
     from_port   = 22
@@ -47,6 +47,7 @@ resource "aws_instance" "devops_server" {
   }
 }
 
+# Make sure this output is at the END of your file
 output "ec2_public_ip" {
   value = aws_instance.devops_server.public_ip
 }
