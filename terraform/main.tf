@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "devops_sg" {
-  name = "node-terraform-sg"
+  name = "node-terraform-sg-1"
 
   ingress {
     from_port   = 22
