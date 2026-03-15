@@ -29,7 +29,7 @@ resource "aws_security_group" "devops_sg" {
 
 resource "aws_instance" "devops_server" {
   ami           = "ami-0a14f53a6fe4dfcd1"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
 
   security_groups = [aws_security_group.devops_sg.name]
 
