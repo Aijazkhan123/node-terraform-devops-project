@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "devops_sg" {
-  name = "node-terraform-sg-20260316"  # unique name
+  name = "node-terraform-sg-20260316-unique"  # unique name
 
   ingress {
     from_port   = 22
