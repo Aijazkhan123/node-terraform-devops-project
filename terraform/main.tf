@@ -2,8 +2,14 @@ provider "aws" {
   region = "ap-south-1"
 }
 
+# Generate a small random ID to make security group unique
+resource "random_id" "sg_suffix" {
+  byte_length = 2
+}
+
+# Security Group
 resource "aws_security_group" "devops_sg" {
-  name = "node-terraform-sg-${random_id.sg_suffix.hex}"  # unique name
+  name = "node-terraform-sg-${random_id.sg_suffix.hex}"
 
   ingress {
     from_port   = 22
@@ -27,10 +33,7 @@ resource "aws_security_group" "devops_sg" {
   }
 }
 
-resource "random_id" "sg_suffix" {
-  byte_length = 2
-}
-
+# EC2 Instance
 resource "aws_instance" "devops_server" {
   ami           = "ami-0a14f53a6fe4dfcd1"
   instance_type = "t3.micro"
@@ -51,13 +54,7 @@ resource "aws_instance" "devops_server" {
   }
 }
 
-# Output the public IP for GitHub Actions
+# Output EC2 public IP
 output "ec2_public_ip" {
   value = aws_instance.devops_server.public_ip
 }
-output "ec2_public_ip" {
-  value = aws_instance.devops_server.public_ip
-}
-     
-  
-
