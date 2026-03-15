@@ -40,3 +40,27 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: terraform
+
+      - name: Wait for EC2 to be ready
+        run: sleep 60  # wait 1 minute for EC2 to start
+
+      - name: Check Node.js App
+        run: |
+          # Get public IP of the EC2 instance
+          EC2_IP=$(terraform output -raw ec2_public_ip)
+          echo "EC2 Public IP: $EC2_IP"
+          
+          # Test the Node.js endpoint
+          RESPONSE=$(curl -s http://$EC2_IP:3000)
+          echo "Response from app: $RESPONSE"
+
+          # Fail the job if response does not contain expected message
+          if [[ "$RESPONSE" != *"Hello from Node.js DevOps Project"* ]]; then
+            echo "App check failed!"
+            exit 1
+          fi
+        working-directory: terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: terraform
