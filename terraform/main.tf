@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "devops_sg" {
-  name = "node-terraform-sg-20260316"
+  name = "node-terraform-sg-20260316"  # unique name
 
   ingress {
     from_port   = 22
@@ -45,6 +45,11 @@ resource "aws_instance" "devops_server" {
   tags = {
     Name = "DevOps-node-terraform-project Server"
   }
+}
+
+# Add this output block so GitHub Actions can get the public IP
+output "ec2_public_ip" {
+  value = aws_instance.devops_server.public_ip
 }
      
   
