@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "devops_sg" {
-  name = "node-terraform-sg-20260316-unique"  # unique name
+  name = "node-terraform-sg-${random_id.sg_suffix.hex}"  # unique name
 
   ingress {
     from_port   = 22
@@ -27,6 +27,10 @@ resource "aws_security_group" "devops_sg" {
   }
 }
 
+resource "random_id" "sg_suffix" {
+  byte_length = 2
+}
+
 resource "aws_instance" "devops_server" {
   ami           = "ami-0a14f53a6fe4dfcd1"
   instance_type = "t3.micro"
@@ -47,7 +51,10 @@ resource "aws_instance" "devops_server" {
   }
 }
 
-# Add this output block so GitHub Actions can get the public IP
+# Output the public IP for GitHub Actions
+output "ec2_public_ip" {
+  value = aws_instance.devops_server.public_ip
+}
 output "ec2_public_ip" {
   value = aws_instance.devops_server.public_ip
 }
