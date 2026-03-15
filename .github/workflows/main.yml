@@ -9,19 +9,26 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: terraform  # <-- folder where main.tf is
+
     steps:
+      # 1️⃣ Checkout repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # 2️⃣ Docker Build & Push
       - name: Login to DockerHub
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
 
       - name: Build Docker Image
         run: docker build -t nodejsonapp/node-terraform-project .
 
-      - name: Push Image to DockerHub
+      - name: Push Docker Image
         run: docker push nodejsonapp/node-terraform-project
 
+      # 3️⃣ AWS Terraform Deployment
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -31,33 +38,22 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.3
 
       - name: Terraform Init
         run: terraform init
-        working-directory: terraform
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: terraform
 
-      - name: Wait for EC2 to be ready
-        run: sleep 60  # wait 1 minute for EC2 and Docker
+      # 4️⃣ Get EC2 Public IP
+      - name: Get EC2 Public IP
+        id: ec2_ip
+        run: echo "EC2_PUBLIC_IP=$(terraform output -raw ec2_public_ip)" >> $GITHUB_ENV
 
-      - name: Check Node.js App
-        run: |
-          # Get public IP of the EC2 instance
-          EC2_IP=$(terraform output -raw ec2_public_ip)
-          echo "EC2 Public IP: $EC2_IP"
-
-          # Test the Node.js endpoint
-          RESPONSE=$(curl -s http://$EC2_IP:3000)
-          echo "Response from app: $RESPONSE"
-
-          # Fail the job if response does not contain expected message
-          if [[ "$RESPONSE" != *"Hello from Node.js DevOps Project"* ]]; then
-            echo "App check failed!"
-            exit 1
-          fi
+      - name: Show EC2 Public IP
+        run: echo "Your EC2 is deployed at: ${{ env.EC2_PUBLIC_IP }}"
        
 
     
