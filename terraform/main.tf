@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "devops_sg" {
-  name = "devops-security-group"
+  name = "node-terraform-sg"
 
   ingress {
     from_port   = 22
@@ -39,7 +39,7 @@ resource "aws_instance" "devops_server" {
               sudo apt install docker.io -y
               sudo systemctl start docker
               sudo systemctl enable docker
-              sudo docker run -d -p 80:3000 yourdockerhub/node-devops-app
+              sudo docker run -d -p 80:3000 nodejsonapp/node-terraform-project
               EOF
 
   tags = {
