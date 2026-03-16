@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "devops_sg" {
-  name = "node-terraform-sg-final 3"
+  name = "node-terraform-sg-final-3"
 
   ingress {
     from_port   = 22
@@ -31,7 +31,7 @@ resource "aws_instance" "devops_server" {
   ami           = "ami-0a14f53a6fe4dfcd1"
   instance_type = "t3.micro"
 
-  security_groups = [aws_security_group.devops_sg.name]
+  vpc_security_group_ids = [aws_security_group.devops_sg.id]
 
   user_data = <<-EOF
               #!/bin/bash
@@ -43,11 +43,10 @@ resource "aws_instance" "devops_server" {
               EOF
 
   tags = {
-    Name = "DevOps-node-terraform-project Server"
+    Name = "DevOps-node-terraform-project-Server"
   }
 }
 
-# Make sure this output is at the END of your file
 output "ec2_public_ip" {
   value = aws_instance.devops_server.public_ip
 }
